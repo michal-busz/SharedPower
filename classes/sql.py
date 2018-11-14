@@ -10,14 +10,17 @@ class sql:
         self.db=mysql.connector.connect(host=self.hostname,user=self.db_username,passwd=self.db_password)
         print(self.db)
 
-    def select(self,query):
+    def query(self,query): #queries with results e.g. SELECT
         cursor=self.db.cursor()
         cursor.execute(query)
         result = cursor.fetchall()
         return result
 
-    def insert(self,query):
+    def execute(self,query): #suitable for: INSERT,UPDATE,DELETE
         cursor = self.db.cursor()
         cursor.execute(query)
         self.db.commit()
-        print(cursor.rowcount," rows inserted") #internal note
+        print(cursor.rowcount," rows executed") #internal note
+
+        #TODO error handling, exceptions throwing
+
