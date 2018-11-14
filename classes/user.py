@@ -2,13 +2,13 @@ import random
 
 class user:
     #initialization
-    username=""
-    password=""
+    username=str
+    password=str
     #TODO add more user account's details
 
     def user(self,name,pw): #constructor
-        username=name
-        password=pw
+        self.username=name
+        self.password=pw
         #TODO add authentication and SQL databases
 
     def captcha(self): #TODO random operation generator
