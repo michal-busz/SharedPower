@@ -1,3 +1,3 @@
-from classes.user import user
-test = user()
-print(test.captcha())
+from classes.sql import sql
+db = sql()
+print(db.select("SELECT * FROM admin_project.test"))

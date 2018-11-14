@@ -1,7 +1,7 @@
 import random
 
 class user:
-    #initialization
+    #variables
     username=str
     password=str
     #TODO add more user account's details
