@@ -1,3 +1,5 @@
-from classes.sql import sql
-db = sql()
-print(db.select("SELECT * FROM admin_project.test"))
+from activities.menu import menu
+from tkinter import Tk
+
+root = Tk()
+app = menu(root)
