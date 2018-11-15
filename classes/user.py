@@ -1,4 +1,5 @@
 import random
+import re
 
 class user:
     #variables
@@ -21,3 +22,9 @@ class user:
             return True
         else:
             return False
+
+    def isValidEmail(email):
+        if len(email) > 7:
+            if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) != None:
+                return True
+        return False
