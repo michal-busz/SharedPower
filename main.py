@@ -3,3 +3,4 @@ from tkinter import Tk
 
 root = Tk()
 app = menu(root)
+root.mainloop()
