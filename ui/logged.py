@@ -5,7 +5,10 @@ class logged_menu(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        tk.Button(self, text="Search for tools").pack()
+        tk.Button(self, text= "Search for tools").pack() #TODO command
+        tk.Button(self, text= "Add announcement").pack() #TODO command
+        tk.Button(self, text= "Return tools").pack() #TODO command
+        tk.Button(self, text= "Invoices").pack() #TODO command
         self.loginBt = tk.Button(self, text="Logout", command=self.logout).pack()
         tk.Button(self, text="Exit", bg="red", command=controller.destroy).pack()
         self.banner = tk.Label(self)
