@@ -14,11 +14,13 @@ class login_menu(tk.Frame):
         self.password.pack()
         tk.Button(self, text="Back", command=lambda: self.controller.show_frame("welcome_menu")).pack(side=tk.LEFT)
         tk.Button(self, text="Login", command=self.login).pack(side=tk.RIGHT)  # TODO add action login
+        self.invalidLogin = tk.Label(self,text="Invalid credentials. Please try again.",fg="red")
 
     def login(self):
         temp = user(self.username.get(), self.password.get())
         if(temp.auth()):
             self.controller.usr = temp
+            self.controller.show_frame("logged_menu")
+            self.controller.frames["logged_menu"].logged()
         else:
-            #if()
-            tk.Label(self,text="Invalid credentials. Please try again.",fg="red").pack()
+            self.invalidLogin.pack() #invalid login alert

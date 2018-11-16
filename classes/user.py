@@ -36,3 +36,6 @@ class user:
         else:
             self.logged=False
         return self.logged
+
+    def getName(self):
+        return str(self.username)

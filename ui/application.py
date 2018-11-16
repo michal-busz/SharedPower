@@ -2,6 +2,7 @@ import tkinter as tk
 from ui.welcome import welcome_menu
 from ui.login import login_menu
 from ui.register import register_menu
+from ui.logged import logged_menu
 from classes.user import user
 
 class App(tk.Tk):
@@ -14,7 +15,7 @@ class App(tk.Tk):
         container.pack(side="top", fill="both", expand=True)
         #container.grid_rowconfigure(0, weight=1) #TODO consider if required
         #container.grid_columnconfigure(0, weight=1) #TODO consider if required
-        self.used_frames= {welcome_menu, login_menu, register_menu} #add all used frame classes
+        self.used_frames= {welcome_menu, login_menu, register_menu, logged_menu} #add all used frame classes
         self.frames = {} #stack all of frames
 
         for F in (self.used_frames):
