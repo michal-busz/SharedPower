@@ -17,8 +17,8 @@ class register_menu(tk.Frame):
         tk.Button(self, text="Back", command=lambda: controller.show_frame("welcome_menu")).pack(side=tk.LEFT)
         tk.Button(self, text="Register", command=self.register).pack(side=tk.RIGHT)  # TODO add action register
 
-        def register(self):
-            if (user.isValidEmail(self.emailReg.get())):
-                print("valid")
-            else:
-                tk.Label(self, text="Provided email is not valid", fg="red").pack()
+    def register(self):
+        if (user.isValidEmail(self.emailReg.get())):
+            print("valid")
+        else:
+            tk.Label(self, text="Provided email is not valid", fg="red").pack()
