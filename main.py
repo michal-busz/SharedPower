@@ -1,11 +1,8 @@
-#from activities.menu import menu
-#from tkinter import Tk
+from ui.application import App
+from tkinter import Tk
 
 #root = Tk()
-#app = menu(root)
-#root.mainloop()
-#OLD CODE
-from test.app import SampleApp
-
-app = SampleApp()
+#root.title("Shared Power v.0.1")
+app = App()
 app.mainloop()
+#root.mainloop()
