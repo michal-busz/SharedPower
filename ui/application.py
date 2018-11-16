@@ -1,11 +1,11 @@
 import tkinter as tk
-from tkinter import font  as tkfont
 from ui.welcome import welcome_menu
 from ui.login import login_menu
 from ui.register import register_menu
+from classes.user import user
 
 class App(tk.Tk):
-
+    usr = user
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs) #executes super's constructor
 

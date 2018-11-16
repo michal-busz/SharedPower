@@ -1,4 +1,5 @@
 import tkinter as tk
+from classes.user import user
 
 class login_menu(tk.Frame):
     def __init__(self, parent, controller):
@@ -6,8 +7,18 @@ class login_menu(tk.Frame):
         self.controller = controller
 
         tk.Label(self, text="Username:").pack(side=tk.TOP)
-        username = tk.Entry(self).pack(side=tk.TOP)
+        self.username = tk.Entry(self)
+        self.username.pack(side=tk.TOP)
         tk.Label(self, text="Password:").pack()
-        password = tk.Entry(self, show='*').pack()
-        tk.Button(self, text="Back", command=lambda: controller.show_frame("welcome_menu")).pack(side=tk.LEFT)
-        tk.Button(self, text="Login").pack(side=tk.RIGHT)  # TODO add action login
+        self.password = tk.Entry(self, show='*')
+        self.password.pack()
+        tk.Button(self, text="Back", command=lambda: self.controller.show_frame("welcome_menu")).pack(side=tk.LEFT)
+        tk.Button(self, text="Login", command=self.login).pack(side=tk.RIGHT)  # TODO add action login
+
+    def login(self):
+        temp = user(self.username.get(), self.password.get())
+        if(temp.auth()):
+            self.controller.usr = temp
+        else:
+            #if()
+            tk.Label(self,text="Invalid credentials. Please try again.",fg="red").pack()

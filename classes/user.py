@@ -5,9 +5,10 @@ class user:
     #variables
     username=str
     password=str
+    logged=False
     #TODO add more user account's details
 
-    def user(self,name,pw): #constructor
+    def __init__(self,name,pw): #constructor
         self.username=name
         self.password=pw
         #TODO add authentication and SQL databases
@@ -28,3 +29,10 @@ class user:
             if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) != None:
                 return True
         return False
+
+    def auth(self):
+        if(self.username=="test" and self.password=="test"): #add SQL authentication
+            self.logged=True
+        else:
+            self.logged=False
+        return self.logged
