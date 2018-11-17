@@ -21,4 +21,5 @@ class logged_menu(tk.Frame):
         self.controller.frames["login_menu"].username.delete(0, 'end')
         self.controller.frames["login_menu"].password.delete(0, 'end')
         self.controller.frames["login_menu"].invalidLogin.pack_forget()
+        self.controller.usr= None
         self.controller.show_frame("welcome_menu")

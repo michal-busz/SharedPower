@@ -3,6 +3,7 @@ from datetime import datetime
 class tool:
 
     #variables
+    name = str
     fullPrice= int
     halfPrice= int
     availableUntil= datetime()

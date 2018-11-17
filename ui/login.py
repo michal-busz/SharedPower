@@ -6,6 +6,7 @@ class login_menu(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
+
         tk.Label(self, text="Username:").pack(side=tk.TOP)
         self.username = tk.Entry(self)
         self.username.pack(side=tk.TOP)
