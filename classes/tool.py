@@ -2,15 +2,6 @@ from datetime import datetime
 
 class tool:
 
-    #variables
-    name = str
-    fullPrice= int
-    halfPrice= int
-    availableUntil= datetime()
-    today = datetime.today()
-    transportFrom = bool
-    transportTo = bool
-
     #constants
     maxDays = 3
     maxSearch = 6*7 #max weeks * 7 days
@@ -19,9 +10,22 @@ class tool:
     #TODO add date validation and check
     #initialization
 
-    def tool(self,fprice,hprice,year,month,day,tFrom=False,tTo=False):
-        self.fullPrice = fprice
-        self.halfPrice = hprice
-        self.availableUntil = datetime(year,month,day)
-        self.transportFrom = tFrom
-        self.transportTo= tTo
+    def __init__(self,name,desc,fprice,tFee,year,month,day,hired=False,hireDate=datetime().today(),peroid=0,tFrom=False,tTo=False):
+        self.transportFee=tFee                          #transportation fee
+        self.name = name                                #main name of the tool
+        self.description = desc                         #description of the tool / additionall notes
+        self.fullPrice = fprice                         #full price for the tool
+        self.halfPrice = fprice/2                       #price for the half of a day
+        self.lateFee = fprice*2                         #fee charged for every additional late day
+        self.availableUntil = datetime(year,month,day)  #avability of the tool
+        self.isHired = hired                            #is tool already hired?
+        self.transportFrom = tFrom                      #is tranport From required?
+        self.transportTo= tTo                           #is transport To required?
+
+
+        if self.isHired:                                # if tool is hired, calculate until date
+            self.hireDate = hireDate
+            self.hiredUntil = datetime(self.hireDate.year, self.hireDate.month, self.hireDate.day+peroid)
+        else:                                           #otherwise put None in variables
+            self.hiredUntil = None
+            self.hireDate = None
