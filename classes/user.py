@@ -1,5 +1,6 @@
 import random
 import re
+from classes import sql
 
 class user:
     #variables

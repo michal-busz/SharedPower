@@ -6,7 +6,7 @@ class register_menu(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
+                                        #TODO restart the form upon every entry
         tk.Label(self, text="Username:").pack(side=tk.TOP)
         username = tk.Entry(self).pack(side=tk.TOP)
         tk.Label(self, text="Password:").pack()

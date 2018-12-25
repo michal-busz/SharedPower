@@ -3,7 +3,7 @@ from classes.tool import tool
 
 class invoice:
 
-    #variables
+    #variables initial ideas
     totalAmount = float
     transportAmount = float
     toolsAmount = float
