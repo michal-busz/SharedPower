@@ -1,4 +1,5 @@
 from datetime import datetime
+from classes import sql
 
 class tool:
 
@@ -10,22 +11,44 @@ class tool:
     #TODO add date validation and check
     #initialization
 
-    def __init__(self,name,desc,fprice,tFee,year,month,day,hired=False,hireDate=datetime().today(),peroid=0,tFrom=False,tTo=False):
-        self.transportFee=tFee                          #transportation fee
-        self.name = name                                #main name of the tool
-        self.description = desc                         #description of the tool / additionall notes
-        self.fullPrice = fprice                         #full price for the tool
-        self.halfPrice = fprice/2                       #price for the half of a day
-        self.lateFee = fprice*2                         #fee charged for every additional late day
-        self.availableUntil = datetime(year,month,day)  #avability of the tool
-        self.isHired = hired                            #is tool already hired?
-        self.transportFrom = tFrom                      #is tranport From required?
-        self.transportTo= tTo                           #is transport To required?
+    def __init__(self,details):
+        # self.details['delivery_cost']                       #transportation fee
+        # self.details['name']                                #main name of the tool
+        # self.details['description']                         #description of the tool / additionall notes
+        # self.details['price']                               #full price for the tool
+        # self.details['available_due']                       #avability of the tool
+        # self.details['is_hired']                            #is tool already hired?
+        # self.details['user_id']                             #owner user's id
+        # self.details['location']                            #location where tool is available
+        # self.details['is_damaged']                          #is tool damaged?
+        # self.details['image']                               #location of the image or image itself
 
+        self.details=details
+        self.id=details['id']
+        self.halfPrice = details['price']/2             #price for the half of a day
+        self.lateFee = details['price']*2               #fee charged for every additional late day
 
-        if self.isHired:                                # if tool is hired, calculate until date
-            self.hireDate = hireDate
-            self.hiredUntil = datetime(self.hireDate.year, self.hireDate.month, self.hireDate.day+peroid)
-        else:                                           #otherwise put None in variables
-            self.hiredUntil = None
-            self.hireDate = None
+        if self.details['is_hired'] == 1:
+            self._get_hired_info()
+
+        if self.details['is_damaged'] == 1:
+            self._get_damaged_info()
+
+    def _get_hired_info(self):
+        qry = "SELECT * FROM hired_tool WHERE tool_id='"+self.id+"'"
+        result = self._db().query(qry)
+        self.hiring_user= result[0]['usr_id']
+        self.hireDate = result [0]['hire_date']
+        self.hiredTo = result[0]['hired_to']
+        self.deliveryTo = result[0]['delivery']
+        self.deliveryFrom = result[0]['delivery_return']
+
+    def _get_damaged_info(self):
+        qry = "SELECT * FROM damaged_tool WHERE tool_id='"+self.id+"'"
+        result = self._db().query(qry)
+        self.damage_cost = result[0]['cost']
+        self.damage_fault = result[0]['fault'] #id of user charged for the damage
+
+    def _db(self):
+        return sql.sql()
+

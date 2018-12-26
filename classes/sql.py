@@ -38,7 +38,7 @@ class sql:
         cursor.close()
         self.connection.close()
 
-    def execute(self,command):
+    def create(self,command): #suitable for create databases and tables
         cursor = self.connection.cursor()
         cursor.execute(command)
         self._close(cursor)
@@ -53,7 +53,7 @@ class sql:
         self._close(cursor)
         return result
 
-    def update(self,command): #DELETE , INSERT
+    def execute(self, command): #DELETE , INSERT, UPDATE
         cursor = self.connection.cursor()    #TODO add close connection and error han
         cursor.execute(command)
         self.connection.commit() #apply changes
