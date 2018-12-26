@@ -33,14 +33,22 @@ class user:
     def _db(self):
         return sql.sql()
 
-    def _user_tools(self):
+    def _user_offered_tools(self):
         qry= "SELECT * FROM tool WHERE usr_id='"+str(self.id)+"'"
         usr_tools= self._db().query(qry)
         result = []
         for x in usr_tools:
             '''y = tool.tool(x['name'],x['description'],x['price'],x['delivery_cost'],
                           x['available_due'],x['is_hired'],x['id'])'''
-            result.append(tool(x))
+            result.append(tool.tool(x))
+        return result
+
+    def _user_hired_tools(self):
+        qry = "SELECT * FROM hired_tool WHERE usr_id='"+self.id+"'"
+        hired_tools = self._db().query(qry)
+        result = []
+        for x in hired_tools:
+            result.append(tool.tool(x))
         return result
 
     def _auth(self): #TODO consider encrypting a password
@@ -55,7 +63,8 @@ class user:
                 self.full_name = result[0]['full_name']
                 self.billing_address = result[0]['billing_address']
                 self.id = result[0]['id']
-                self.tools=self._user_tools()
+                self.offered_tools=self._user_offered_tools()
+                self.hired_tools= self._user_hired_tools()
             else:
                 self.logged= False
         return self.logged
