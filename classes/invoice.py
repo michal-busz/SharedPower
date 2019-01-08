@@ -23,3 +23,6 @@ class invoiceEntry:
 
     def totalCost(self):
         result = self.tool.n
+
+
+#TODO invoice generation each month depending on day
