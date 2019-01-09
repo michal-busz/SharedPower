@@ -2,31 +2,55 @@ import datetime
 import os
 from classes import data
 
+def str_to_bool(str):
+    if str == 'False':
+        return False
+    else:
+        return True
+
+def str_to_date(str):
+    if str == None or str == 'None':
+        return None
+    temp = str.split('-')
+    return datetime.date(int(temp[0]),int(temp[1]),int(temp[2]))
+
+def str_to_ID(str):
+    if str == None or str=='None':
+        return None
+    else:
+        return int(str)
+
+def str_to_cost(str):
+    if str == None or str=='None':
+        return None
+    else:
+        return float(str)
+
 def create_tool_details(name, price, user_id,  available_due, location,delivery_cost = 0, description="",
                         image=False, hired=False, delivery_to=False, delivery_from=False,
                         date_hire=None, id_hire=-1, hired_to_date=False, return_date= None,
                         return_accepted= True, damaged=False, damage_cost=0, fault = None, id= None):
     details = {
-        "delivery_cost": float(delivery_cost),
+        "delivery_cost": str_to_cost(delivery_cost),
         "name": str(name),
         "description": str(description),
         "price": float(price),
-        "id": int(id),
-        "available_due": available_due,
-        "is_hired":    bool(hired),
-        "user_id":      int(user_id),
+        "id": str_to_ID(id),
+        "available_due": str_to_date(available_due),
+        "is_hired":    str_to_bool(hired),
+        "user_id":      str_to_ID(user_id),
         "location":     str(location),
-        "is_damaged":   bool(damaged),
-        "image":        bool(image),
-        "is_deliveryTo":    bool(delivery_to),
-        "is_deliveryFrom":  bool(delivery_from),
-        "hire_from_date":   date_hire,
-        "hiring_user":      int(id_hire),
-        "hired_to_date":    hired_to_date,
-        "return_date":      return_date,
-        "is_return_accepted":   return_accepted,
-        "damage_cost":      float(damage_cost),
-        "fault_user":       bool(str(fault).rstrip("\n"))
+        "is_damaged":   str_to_bool(damaged),
+        "image":        str_to_bool(image),
+        "is_deliveryTo":    str_to_bool(delivery_to),
+        "is_deliveryFrom":  str_to_bool(delivery_from),
+        "hire_from_date":   str_to_date(date_hire),
+        "hiring_user":      str_to_ID(id_hire),
+        "hired_to_date":    str_to_date(hired_to_date),
+        "return_date":      str_to_date(return_date),
+        "is_return_accepted":   str_to_bool(return_accepted),
+        "damage_cost":      str_to_cost(damage_cost),
+        "fault_user":       str_to_bool(str(fault).rstrip("\n"))
     }
     return details
 

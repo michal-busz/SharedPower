@@ -8,7 +8,7 @@ from classes import data
 
 class user:
     #TODO add more user account's details
-    def isValidEmail(email):
+    def isValidEmail(self, email):
         if len(email) > 7:
             if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) != None:
                 return True
@@ -18,6 +18,7 @@ class user:
         self.username=name
         self.password=pw
         self._auth()
+        self._get_available_tools()
 
     def captcha(self): #TODO random operation generator
         #TODO consider if needed and implement to GUI
@@ -45,6 +46,17 @@ class user:
                 result.append(x)
         return result
 
+    def _get_available_tools(self):
+        self.available_tools = []
+        for tool in data.tools:
+            if self.logged:
+                if (tool.details['is_hired'] == False) and (tool.details['user_id'] != self.id):
+                    self.available_tools.append(tool)
+            else:
+                self.available_tools=data.tools
+                break
+
+
     def _auth(self): #TODO consider encrypting a password
         for y,x in data.users.items():
             if not x[0]==self.username:
@@ -69,7 +81,7 @@ class user:
 
     def _userExists(self,mail): #checks if user with the same login or email already exists
         exist = False
-        for x in data.users:
+        for y,x in data.users.items():
             if x[0] == self.username:
                 exist = True
             else:

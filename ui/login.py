@@ -19,7 +19,7 @@ class login_menu(tk.Frame):
 
     def login(self):
         temp = user(self.username.get(), self.password.get())
-        if(temp.auth()):
+        if(temp.logged):
             self.controller.usr = temp
             self.controller.show_frame("logged_menu")
             self.controller.frames["logged_menu"].logged()
