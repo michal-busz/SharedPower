@@ -5,6 +5,8 @@ from classes import data
 def str_to_bool(str):
     if str == 'False':
         return False
+    elif str == None or str=='None':
+        return None
     else:
         return True
 
@@ -29,7 +31,7 @@ def str_to_cost(str):
 def create_tool_details(name, price, user_id,  available_due, location,delivery_cost = 0, description="",
                         image=False, hired=False, delivery_to=False, delivery_from=False,
                         date_hire=None, id_hire=-1, hired_to_date=False, return_date= None,
-                        return_accepted= True, damaged=False, damage_cost=0, fault = None, id= None):
+                        return_accepted= True, damaged=False, damage_cost=0, fault = None, is_half=None, id= None):
     details = {
         "delivery_cost": str_to_cost(delivery_cost),
         "name": str(name),
@@ -50,6 +52,7 @@ def create_tool_details(name, price, user_id,  available_due, location,delivery_
         "return_date":      str_to_date(return_date),
         "is_return_accepted":   str_to_bool(return_accepted),
         "damage_cost":      str_to_cost(damage_cost),
+        "is_half_day":      str_to_bool(is_half),
         "fault_user":       str_to_bool(str(fault).rstrip("\n"))
     }
     return details
@@ -83,6 +86,7 @@ class tool:
         # self.details['is_return_accepted']                  #is return accepted by owner?
         # self.details['damage_cost']                         #cost of damage
         # self.details['fault_user']                          #is hiring user fault of damage?
+        # self.details['is_half_day']                         #is tool hired for a additional half of a day?
 
         self.details=details
         self.id=details['id']
@@ -115,16 +119,18 @@ class tool:
         result += str(self.details['return_date'])+'#'          # 15) Return date 			(datetime()) 	[None]
         result += str(self.details['is_return_accepted'])+'#'   # 16) Is return accepted? 		(Boolean) 	[None]
         result += str(self.details['damage_cost'] )+'#'         # 17) Damage cost				(Float) 	[-1]
+        result += str(self.details['is_half_day'])+'#'
         result += str(self.details['fault_user'])               # 18) Is hiring user fault? 		(Boolean) 	[None]
         return result
 
-    def hire_tool(self, usr_id, hired_to, delivery_to=False, delivery_from = False):
+    def hire_tool(self, usr_id, hired_to, half_day=False, delivery_to=False, delivery_from = False):
         self.details['hiring_user'] = usr_id
         self.details['hired_to_date'] = hired_to
         self.details['is_deliveryTo'] = delivery_to
         self.details['is_deliveryFrom'] = delivery_from
         self.details['is_hired'] = True
         self.details['hire_from_date'] = self._getCurrentDate()
+        self.details['is_half_day'] = half_day
         self.offer_tool()   # update necessary details
         #TODO add invoice entry
 
@@ -143,6 +149,7 @@ class tool:
 
     def return_tool(self): # only if return accepted by owner
         #TODO consider changing is_hired value
+        #TODO calulate late fee
         self.details['is_return_accepted']=True
         self.offer_tool()
 
@@ -150,5 +157,6 @@ class tool:
         self.details['return_date'] = self._getCurrentDate()
         #TODO calculate late return fee
         #TODO add validation of returning date
+
 
 #TODO  add insurance company methods
