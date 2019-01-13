@@ -9,11 +9,13 @@ def init():
     global tools
     global invoices
     global images
+    global damaged
     slash = _get_slash()
     users = _get_users()
     tools = _get_tools()
     invoices = _get_invoices()
     images = _get_images()
+    damaged = _get_damaged_tools()
 
 def _get_slash():
     if (platform.system() == 'Linux'):
@@ -38,6 +40,18 @@ def _get_tools():
         temp = detail.split("#")
         result.append(tool.tool(tool.create_tool_details(temp[0],temp[2],temp[1],temp[3],temp[5],temp[6],temp[7],temp[9],temp[4],temp[13],temp[14],temp[11],
                                                temp[10],temp[12],temp[15],temp[16],temp[8],temp[17],temp[19],temp[18],x)))
+    return result
+
+def _get_damaged_tools():
+    ids = os.listdir(get_damaged_file())
+    result = []
+    for x in ids:
+        detail = open(get_damaged_file(x)).readline()
+        print(detail)
+        temp = detail.split("#")
+        print(temp)
+        result.append(tool.damageDetails(x,temp[0],temp[1],temp[2]))
+        print(result)
     return result
 
 def _get_invoices():

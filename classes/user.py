@@ -144,6 +144,14 @@ class user:
         result+= self.billing_address.rstrip('\n')   # 4) Billing Address 	(String)
         return result
 
+    def update_details(self, pw, mail, f_name, b_address):
+        self.password=pw
+        self.email= mail
+        self.full_name= f_name
+        self.billing_address=b_address
+        file = open(data.get_users_file(len(data.users)), 'w')
+        file.write(self._file_format())
+
     def _get_invoices(self):
         result = []
         for x in data.invoices:

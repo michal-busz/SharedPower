@@ -22,6 +22,12 @@ def str_to_ID(str):
     else:
         return int(str)
 
+def str_to_UID(str):
+    if str == None or str=='None':
+        return (data.tools[len(data.tools)-1].id +1)
+    else:
+        return int(str)
+
 def str_to_cost(str):
     if str == None or str=='None':
         return None
@@ -37,7 +43,7 @@ def create_tool_details(name, price, user_id,  available_due, location,delivery_
         "name": str(name),
         "description": str(description),
         "price": float(price),
-        "id": str_to_ID(id),
+        "id": str_to_UID(id),
         "available_due": str_to_date(available_due),
         "is_hired":    str_to_bool(hired),
         "user_id":      str_to_ID(user_id),
@@ -95,20 +101,20 @@ class tool:
         self.file = data.get_tools_file(self.id)
 
 
-    def offer_tool(self, new=False): #also suitabkle for updating details of the tool
+    def offer_tool(self): #also suitabkle for updating details of the tool
         #TODO consider increasing ID of a new tool
         file = open(self.file,'w')
         file.write(self._file_format())
 
     def _file_format(self):
-        result = self.details['name']+'#'                       # 0) Tool Name 				(String)
+        result = str(self.details['name'])+'#'                       # 0) Tool Name 				(String)
         result += str(self.details['user_id'])+'#'              # 1) Owner user's ID 			(Integer)
         result += str(self.details['price']) +'#'               # 2) Price 				(Float)
         result += str(self.details['available_due'])+'#'        # 3) Date 'available due to' 		(datetime()) 	[datetime.today()]
         result += str(self.details['is_hired'])+'#'             # 4) Is tool hired? 			(Boolean) 	[False]
-        result += self.details['location']+'#'                  # 5) Location 				(String)
+        result += str(self.details['location'])+'#'                  # 5) Location 				(String)
         result += str(self.details['delivery_cost'])+'#'        # 6) Delivery price 			(Float) 	[0.00]
-        result += self.details['description'].rstrip('\n')+'#'  # 7) Long Description 			(String) 	[""]
+        result += str(self.details['description']).rstrip('\n')+'#'  # 7) Long Description 			(String) 	[""]
         result += str(self.details['is_damaged'])+'#'           # 8) Is tool damaged? 			(Boolean) 	[False]
         result += str(self.details['image'])+'#'                # 9) Is image attached? 			(Boolean) 	[False]
         result += str(self.details['hiring_user'])+'#'          # 10) Hiring user's ID 			(Integer) 	[-1]
@@ -140,6 +146,12 @@ class tool:
         self.offer_tool() #update details
         #TODO consider return date value
 
+    def return_damaged_tool(self,cost, flt_user): #executed only by insurance company
+        self.details['damage_cost']=cost
+        self.details['fault_user']=flt_user
+        self.details['is_return_accepted']= True
+        self.offer_tool()
+
     def remove_tool(self):
         os.remove(self.file)
         #TODO consider removing item from GUI display after removing file
@@ -160,3 +172,29 @@ class tool:
 
 
 #TODO  add insurance company methods
+
+class damageDetails:
+    def __init__(self,id ,own_desc, isImage, company_resp):
+        self.id = str_to_ID(id)
+        self.owner_description = str(own_desc)
+        self.isImageUploaded = str_to_bool(isImage)
+        self.company_response = str(company_resp).rstrip('\n')
+        self.file = data.get_damaged_file(id)
+
+    def _file_format(self):
+        result = str(self.owner_description)+"#"
+        result+= str(self.isImageUploaded)+"#"
+        result+= str(self.company_response)
+        return result
+
+    def post_damage(self): #creats and updates
+        file = open(self.file, 'w')
+        file.write(self._file_format())
+
+    def completeCase(self, cost, flt_usr, response):
+        self.company_response=response
+        self.post_damage()
+        for x in data.tools:
+            if (x.id == self.id):
+                x.return_damaged_tool(cost,flt_usr)
+                break
