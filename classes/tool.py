@@ -2,42 +2,42 @@ import datetime
 import os
 from classes import data
 
-def str_to_bool(str):
-    if str == 'False':
+def str_to_bool(str):       #covert String to bool
+    if str == 'False' or str == False:
         return False
     elif str == None or str=='None':
         return None
     else:
         return True
 
-def str_to_date(str):
+def str_to_date(str):       #covert String to datetime
     if str == None or str == 'None':
         return None
     temp = str.split('-')
     return datetime.date(int(temp[0]),int(temp[1]),int(temp[2]))
 
-def str_to_ID(str):
+def str_to_ID(str):         #convert String to ID
     if str == None or str=='None':
         return None
     else:
         return int(str)
 
-def str_to_UID(str):
+def str_to_UID(str):        #convert String to User ID & returns new ID if null
     if str == None or str=='None':
         return (data.tools[len(data.tools)-1].id +1)
     else:
         return int(str)
 
-def str_to_cost(str):
+def str_to_cost(str):       #convert String to float(cost)
     if str == None or str=='None':
         return None
     else:
         return float(str)
 
 def create_tool_details(name, price, user_id,  available_due, location,delivery_cost = 0, description="",
-                        image=False, hired=False, delivery_to=False, delivery_from=False,
-                        date_hire=None, id_hire=-1, hired_to_date=False, return_date= None,
-                        return_accepted= True, damaged=False, damage_cost=0, fault = None, is_half=None, id= None):
+                        image=False, hired=False, delivery_to=None, delivery_from=None,
+                        date_hire=None, id_hire=None, hired_to_date=None, return_date= None,
+                        return_accepted= None, damaged=False, damage_cost=None, fault = None, is_half=None, id= None):
     details = {
         "delivery_cost": str_to_cost(delivery_cost),
         "name": str(name),
@@ -63,10 +63,12 @@ def create_tool_details(name, price, user_id,  available_due, location,delivery_
     }
     return details
 
+#creates details dict() for tool class
+
 class tool:
 
     #constants
-    maxDays = 3
+    maxHireDays = 3
     maxSearch = 6*7 #max weeks * 7 days
 
     #TODO double fee for every additional day
@@ -98,15 +100,15 @@ class tool:
         self.id=details['id']
         self.halfPrice = details['price']/2             #price for the half of a day
         self.lateFee = details['price']*2               #fee charged for every additional late day
-        self.file = data.get_tools_file(self.id)
+        self.file = data.get_tools_file(self.id)        #gets path to tool's file
 
 
-    def offer_tool(self): #also suitabkle for updating details of the tool
+    def offer_tool(self): #creates tool's file & also suitable for updating existing files
         #TODO consider increasing ID of a new tool
         file = open(self.file,'w')
         file.write(self._file_format())
 
-    def _file_format(self):
+    def _file_format(self): #generates tool's file content
         result = str(self.details['name'])+'#'                       # 0) Tool Name 				(String)
         result += str(self.details['user_id'])+'#'              # 1) Owner user's ID 			(Integer)
         result += str(self.details['price']) +'#'               # 2) Price 				(Float)
@@ -129,21 +131,22 @@ class tool:
         result += str(self.details['fault_user'])               # 18) Is hiring user fault? 		(Boolean) 	[None]
         return result
 
-    def hire_tool(self, usr_id, hired_to, half_day=False, delivery_to=False, delivery_from = False):
+    def hire_tool(self, usr_id, hired_to, half_day=False, delivery_to=False, delivery_from = False):    #hire tool action
         self.details['hiring_user'] = usr_id
         self.details['hired_to_date'] = hired_to
         self.details['is_deliveryTo'] = delivery_to
         self.details['is_deliveryFrom'] = delivery_from
         self.details['is_hired'] = True
-        self.details['hire_from_date'] = self._getCurrentDate()
+        self.details['hire_from_date'] = self.getCurrentDate()
         self.details['is_half_day'] = half_day
         self.offer_tool()   # update necessary details
         #TODO add invoice entry
 
-    def damage_tool(self): # if owner think that tool is damaged
+    def damage_tool(self,damage_description,isImage=False): # if owner think that tool is damaged action
         self.details['is_damaged'] = True
         self.details['is_return_accepted'] = False
         self.offer_tool() #update details
+        data.damaged[str(self.id)] = damageDetails(self.id,damage_description,isImage,None)
         #TODO consider return date value
 
     def return_damaged_tool(self,cost, flt_user): #executed only by insurance company
@@ -152,12 +155,12 @@ class tool:
         self.details['is_return_accepted']= True
         self.offer_tool()
 
-    def remove_tool(self):
+    def remove_tool(self):              #remove tool action
         os.remove(self.file)
         #TODO consider removing item from GUI display after removing file
 
-    def _getCurrentDate(self):
-        return datetime.datetime.day(datetime.datetime.today())
+    def getCurrentDate(self):      #returns current date object
+        return datetime.date.today()
 
     def return_tool(self): # only if return accepted by owner
         #TODO consider changing is_hired value
@@ -165,33 +168,34 @@ class tool:
         self.details['is_return_accepted']=True
         self.offer_tool()
 
-    def request_return(self): #hiring request returning, owner should check tools condition and accept
-        self.details['return_date'] = self._getCurrentDate()
+    def request_return(self): #hiring user  request returning, owner should check tools condition and accept
+        self.details['return_date'] = self.getCurrentDate()
+        self.offer_tool()
         #TODO calculate late return fee
         #TODO add validation of returning date
 
 
 #TODO  add insurance company methods
 
-class damageDetails:
+class damageDetails:    #damaged tools object
     def __init__(self,id ,own_desc, isImage, company_resp):
         self.id = str_to_ID(id)
         self.owner_description = str(own_desc)
         self.isImageUploaded = str_to_bool(isImage)
-        self.company_response = str(company_resp).rstrip('\n')
+        self.company_response = str_to_bool(company_resp)
         self.file = data.get_damaged_file(id)
 
-    def _file_format(self):
+    def _file_format(self):     #return files format for damaged tool
         result = str(self.owner_description)+"#"
         result+= str(self.isImageUploaded)+"#"
         result+= str(self.company_response)
         return result
 
-    def post_damage(self): #creats and updates
+    def post_damage(self): #creats and updates damaged tools file
         file = open(self.file, 'w')
         file.write(self._file_format())
 
-    def completeCase(self, cost, flt_usr, response):
+    def completeCase(self, cost, flt_usr, response):    #used by insurance company to fisnish damaged tool queries
         self.company_response=response
         self.post_damage()
         for x in data.tools:

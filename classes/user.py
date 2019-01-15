@@ -9,7 +9,7 @@ from classes import invoice
 
 class user:
     #TODO add more user account's details
-    def isValidEmail(self, email):
+    def isValidEmail(self, email):      #check if provided email is valid email address
         if len(email) > 7:
             if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) != None:
                 return True
@@ -21,33 +21,21 @@ class user:
         self._auth()
         self._get_available_tools()
 
-    def captcha(self): #TODO random operation generator
-        #TODO consider if needed and implement to GUI
-        a=random.randrange(10)
-        b=random.randrange(10)
-        result=a+b
-        #TODO input validation
-        userInput=input("Verification of your humanity, please calculate the result: "+str(a)+" + "+str(b)+" = ?")
-        if(int(userInput)==int(result)):
-            return True
-        else:
-            return False
-
-    def _user_offered_tools(self):
+    def _user_offered_tools(self):  #gathers user's offered tools
         result = []
         for x in data.tools:
             if x.details['user_id'] == self.id:
                 result.append(x)
         return result
 
-    def _user_hired_tools(self):
+    def _user_hired_tools(self):    #gathers user's hired tools
         result = []
         for x in data.tools:
             if x.details['hiring_user']==self.id:
                 result.append(x)
         return result
 
-    def _to_be_invoiced(self): #TODO check if it works correctly
+    def _to_be_invoiced(self): #returns not invoiced tools
         invoiced = []
         related_tools = self._related_tools()
         for inv in self.invoices:
@@ -56,19 +44,16 @@ class user:
                     invoiced.append(x)
         return list(set(related_tools) - set(invoiced))
 
-    def _get_available_tools(self):
+    def _get_available_tools(self): #returns all tools available to hire for user
         self.available_tools = []
         for tool in data.tools:
-            if self.logged:
                 condition1= (tool.details['is_hired'] == False) and (tool.details['user_id'] != self.id)
                 condition2= (tool.details['available_due']> datetime.date.today()) and (tool.details['is_damaged'] == False)
                 if condition1 and condition2:
                     self.available_tools.append(tool)
-            else:
-                self.available_tools=data.tools
-                break
 
-    def _related_tools(self):
+
+    def _related_tools(self):   #return ids of tools related to user (hired & offered) used to generate invoices
         result = []
         self.first_tool_date=datetime.date.today()
         for x in self.hired_tools:
@@ -83,8 +68,12 @@ class user:
                     self.first_tool_date = x.details['hired_to_date']
         return result
 
-    def _auth(self): #TODO consider encrypting a password
+    def _auth(self): #authenticate and check if user details are correct
         #TODO add insurance company login and activities
+        self.logged = False
+        if (self.username== "insurance" and self.password == "insurance"):
+            self.logged = True
+            #TODO switch to a correct insurance company window
         for y,x in data.users.items():
             if not x[0]==self.username:
                 self.logged=False
@@ -102,12 +91,11 @@ class user:
                     self._generate_invoices()
                     return True
                 else:
+                    self.id = -1
                     self.logged= False
                     return False
+        self.id = -1
         return self.logged
-
-    def getName(self):
-        return str(self.username)
 
     def _userExists(self,mail): #checks if user with the same login or email already exists
         exist = False
@@ -121,22 +109,22 @@ class user:
                     exist = False
         return exist
 
-    def register(self,mail, f_name, b_address):
+    def register(self,mail, f_name, b_address):     #register a new user if not existing & creates user file
         if self.isValidEmail(mail):
             if not self._userExists(mail):
                 self.email=mail
                 self.full_name=f_name
                 self.billing_address=b_address
                 self.logged = True
-                #TODO consider validating address
                 file = open(data.get_users_file(len(data.users)),'w')
                 file.write(self._file_format()) #create a user file
+                return True
             else:
-                print("user with the same login or email already exists")
+                return False
         else:
-            print("not valid email address")
+            return False
 
-    def _file_format(self):
+    def _file_format(self):     #returns file format for user file
         result = self.username+'#'      # 0) Username Login 	(String)
         result+= self.password+'#'      # 1) Password 		(String)
         result+= self.email+'#'         # 2) Email address 	(String)
@@ -144,22 +132,22 @@ class user:
         result+= self.billing_address.rstrip('\n')   # 4) Billing Address 	(String)
         return result
 
-    def update_details(self, pw, mail, f_name, b_address):
+    def update_details(self, pw, mail, f_name, b_address):  #updates user's details
         self.password=pw
         self.email= mail
         self.full_name= f_name
         self.billing_address=b_address
-        file = open(data.get_users_file(len(data.users)), 'w')
+        file = open(data.get_users_file(self.id), 'w')
         file.write(self._file_format())
 
-    def _get_invoices(self):
+    def _get_invoices(self):    #returns user's invoices
         result = []
         for x in data.invoices:
             if self.id == x.user_id:
                 result.append(x)
         return result
 
-    def _generate_invoices(self):
+    def _generate_invoices(self):   #generate user's invoices
         last_invoice_date= datetime.date(1,1,1)
         for inv in self.invoices:
             if last_invoice_date < inv.generation_date:
@@ -175,15 +163,16 @@ class user:
                     for month in x:
                         generation_date = datetime.date(int(year),int(month),30)
                         for t in self.tools_to_generate_inv:
-                            if t.details['is_return_accepted'] == True and t.details['return_date'] < generation_date:
-                                entries = self._generate_tool_invoice_entries(iterator,t)
-                                uid = invoice.get_invoice_uid(self.id, month, year)
-                                inv = invoice.invoice(entries,uid)
-                                self.invoices.append(inv)
-                                inv.generate_invoice()
-                                self.tools_to_generate_inv.remove(t)
+                            if t.details['is_return_accepted'] == True and t.details['return_date'] !=None:
+                                    if  t.details['return_date'] < generation_date:
+                                        entries = self._generate_tool_invoice_entries(iterator,t)
+                                        uid = invoice.get_invoice_uid(self.id, month, year)
+                                        inv = invoice.invoice(entries,uid)
+                                        self.invoices.append(inv)
+                                        inv.generate_invoice()
+                                        self.tools_to_generate_inv.remove(t)
 
-    def _dates_to_generate(self, date):
+    def _dates_to_generate(self, date): #check what dates are missing in invoiceing since user logged last time
         result = dict()
         today = datetime.date.today()
         #date = date.replace(month=date.month+1) #TODO check if needed
@@ -218,7 +207,7 @@ class user:
             result[str(date.year)] = temp
         return result
 
-    def _generate_tool_invoice_entries(self,id, tool):
+    def _generate_tool_invoice_entries(self,id, tool):  #generate all related tool's invoice entries
         result = []
         if tool.details['user_id'] == self.id:
             # tool

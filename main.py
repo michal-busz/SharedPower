@@ -1,14 +1,10 @@
-'''from ui.application import App
-from classes import data
+'''from classes import data
 from classes import user
 data.init()
-app = App() #Tkinter.Tk object
-app.mainloop() #starts'''
+test = user.user("login","password")'''
 
 from classes import data
-from classes import user
+from ui import full_login_and_regis
 data.init()
-test = user.user("login","password")
-
-
-
+app = full_login_and_regis.Main_win()
+app.mainloop()
