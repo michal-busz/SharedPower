@@ -24,7 +24,7 @@ def str_to_ID(str):         #convert String to ID
 
 def str_to_UID(str):        #convert String to User ID & returns new ID if null
     if str == None or str=='None':
-        return (data.tools[len(data.tools)-1].id +1)
+        return data.tool_id
     else:
         return int(str)
 
@@ -70,8 +70,6 @@ class tool:
     #constants
     maxHireDays = 3
     maxSearch = 6*7 #max weeks * 7 days
-
-    #TODO double fee for every additional day
     #initialization
 
     def __init__(self,details):
@@ -104,7 +102,6 @@ class tool:
 
 
     def offer_tool(self): #creates tool's file & also suitable for updating existing files
-        #TODO consider increasing ID of a new tool
         file = open(self.file,'w')
         file.write(self._file_format())
 
@@ -140,14 +137,12 @@ class tool:
         self.details['hire_from_date'] = self.getCurrentDate()
         self.details['is_half_day'] = half_day
         self.offer_tool()   # update necessary details
-        #TODO add invoice entry
 
     def damage_tool(self,damage_description,isImage=False): # if owner think that tool is damaged action
         self.details['is_damaged'] = True
         self.details['is_return_accepted'] = False
         self.offer_tool() #update details
         data.damaged[str(self.id)] = damageDetails(self.id,damage_description,isImage,None)
-        #TODO consider return date value
 
     def return_damaged_tool(self,cost, flt_user): #executed only by insurance company
         self.details['damage_cost']=cost
@@ -163,19 +158,13 @@ class tool:
         return datetime.date.today()
 
     def return_tool(self): # only if return accepted by owner
-        #TODO consider changing is_hired value
-        #TODO calulate late fee
         self.details['is_return_accepted']=True
         self.offer_tool()
 
     def request_return(self): #hiring user  request returning, owner should check tools condition and accept
         self.details['return_date'] = self.getCurrentDate()
         self.offer_tool()
-        #TODO calculate late return fee
-        #TODO add validation of returning date
 
-
-#TODO  add insurance company methods
 
 class damageDetails:    #damaged tools object
     def __init__(self,id ,own_desc, isImage, company_resp):

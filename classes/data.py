@@ -12,12 +12,21 @@ def init():
     global images   # stores all images objects
     global damaged  # stores all damaged objects
     global current_user
+    tool_id=0
     slash = _get_slash()            #fetch OS slash
     users = _get_users()            #fetch all users from files
     tools = _get_tools()            #fetch all tools from files
     invoices = _get_invoices()      #fetch all invoices from files
     images = _get_images()          #fetch all images from files
     damaged = _get_damaged_tools()  #fetch all damaged tools from files
+
+def reload():
+    slash = _get_slash()  # fetch OS slash
+    users = _get_users()  # fetch all users from files
+    tools = _get_tools()  # fetch all tools from files
+    invoices = _get_invoices()  # fetch all invoices from files
+    images = _get_images()  # fetch all images from files
+    damaged = _get_damaged_tools()  # fetch all damaged tools from files
 
 def _get_slash():   #get correct slash depending on Operating System
     if (platform.system() == 'Windows'):
@@ -37,11 +46,15 @@ def _get_users():   #return all users in dictionary
 def _get_tools():   #return all tools in list
     ids = os.listdir(get_tools_file())              #fetch all files in 'tools' folder
     result = []
+    global tool_id
+    tool_id=0
     for x in ids:
         detail = open(get_tools_file(x)).readline() #get specific file's content (first line)
         temp = detail.split("#")                    #split content of the file
         result.append(tool.tool(tool.create_tool_details(temp[0],temp[2],temp[1],temp[3],temp[5],temp[6],temp[7],temp[9],temp[4],temp[13],temp[14],temp[11],
                                                temp[10],temp[12],temp[15],temp[16],temp[8],temp[17],temp[19],temp[18],x)))
+        if int(x)>tool_id:
+            tool_id = int(x)
                                                     #create tool object and add it to the list
     return result
 

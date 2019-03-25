@@ -8,7 +8,6 @@ from classes import invoice
 
 
 class user:
-    #TODO add more user account's details
     def isValidEmail(self, email):      #check if provided email is valid email address
         if len(email) > 7:
             if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) != None:
@@ -69,7 +68,6 @@ class user:
         return result
 
     def _auth(self): #authenticate and check if user details are correct
-        #TODO add insurance company login and activities
         self.logged = False
         if (self.username== "insurance" and self.password == "insurance"):
             self.logged = True
@@ -116,8 +114,12 @@ class user:
                 self.full_name=f_name
                 self.billing_address=b_address
                 self.logged = True
-                file = open(data.get_users_file(len(data.users)),'w')
+                self.id =len(data.users)
+                file = open(data.get_users_file(self.id),'w')
                 file.write(self._file_format()) #create a user file
+                self.offered_tools = self._user_offered_tools()
+                self.hired_tools = self._user_hired_tools()
+                self.invoices = self._get_invoices()
                 return True
             else:
                 return False
@@ -175,7 +177,6 @@ class user:
     def _dates_to_generate(self, date): #check what dates are missing in invoiceing since user logged last time
         result = dict()
         today = datetime.date.today()
-        #date = date.replace(month=date.month+1) #TODO check if needed
         year_diffrence = today.year - date.year
         if year_diffrence:
             firsty_diffrence = 12 - date.month
@@ -286,5 +287,3 @@ class user:
                 id += 1
 
         return result
-
-    #TODO add suspend/delete user account
